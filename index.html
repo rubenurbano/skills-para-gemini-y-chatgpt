@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skills para Gemini y ChatGPT — Tutorial V001</title>
+<style>
+:root{
+  --bg:#0a0e1a; --card:#0f172a; --border:#1e3a5f;
+  --text:#e2e8f0; --text2:#94a3b8;
+  --accent:#38bdf8; --accent2:#00d4ff;
+  --success:#10b981; --danger:#ef4444; --warn:#f59e0b;
+}
+body.light{
+  --bg:#f8fafc; --card:#ffffff; --border:#cbd5e1;
+  --text:#0f172a; --text2:#475569;
+  --accent:#0284c7; --accent2:#0891b2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.65; font-size:16px;
+  transition:background .3s,color .3s;
+}
+body.fs-sm{font-size:14px}
+body.fs-lg{font-size:18px}
+body.fs-xl{font-size:20px}
+#progress{
+  position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  width:0%;z-index:100;transition:width .1s;
+}
+nav{
+  position:sticky;top:0;z-index:40;
+  background:var(--bg); border-bottom:1px solid var(--border);
+  padding:8px 10px; display:flex; gap:6px;
+  overflow-x:auto; align-items:center;
+  height:58px; box-sizing:border-box;
+}
+nav::-webkit-scrollbar{height:4px}
+nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.chip{
+  flex-shrink:0; background:transparent;
+  border:1px solid var(--border); color:var(--text);
+  padding:0 14px; min-height:42px; border-radius:999px;
+  cursor:pointer; font-size:13px; font-weight:500;
+  font-family:inherit; transition:all .2s; white-space:nowrap;
+}
+.chip:hover{background:rgba(56,189,248,.1);border-color:var(--accent)}
+.chip.on{background:var(--accent);color:#0a0e1a;border-color:var(--accent);font-weight:700}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#mb{font-weight:700}
+#dr{
+  position:fixed;top:58px;left:0;bottom:0;
+  width:min(330px,88vw); background:#0f172a;
+  border-right:1px solid #1e3a5f;
+  transform:translateX(-105%); transition:transform .25s ease;
+  z-index:35; overflow-y:auto; padding:10px;
+  box-shadow:4px 0 20px rgba(0,0,0,.4);
+}
+#dr.o{transform:none}
+#dr a{
+  display:block; padding:12px; border-radius:8px;
+  color:#e2e8f0; cursor:pointer; min-height:44px;
+  text-decoration:none; font-size:14px; transition:background .15s;
+}
+#dr a:hover{background:#ffffff0d}
+#dr a.on{background:#00d4ff22;color:#00d4ff;font-weight:600}
+#dr a:focus-visible{outline:2px solid #00d4ff;outline-offset:-2px}
+#searchWrap{
+  position:sticky;top:58px;z-index:20;
+  background:var(--bg); padding:8px 10px;
+  border-bottom:1px solid var(--border);
+  display:flex; gap:8px; align-items:center;
+}
+#search{
+  flex:1; background:var(--card); border:1px solid var(--border);
+  color:var(--text); padding:8px 12px; border-radius:8px;
+  font-size:14px; font-family:inherit; min-height:42px;
+}
+#search:focus{outline:2px solid var(--accent);outline-offset:0}
+#searchCount{padding:8px 12px;font-size:12px;color:var(--text2);white-space:nowrap;min-width:0}
+mark.search-hit{background:var(--warn);color:#000;padding:0 2px;border-radius:2px}
+mark.search-current{background:var(--accent);color:#000}
+main{padding:20px;max-width:960px;margin:0 auto}
+section[data-tab]{display:none}
+section[data-tab].on{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:1.8rem;margin:.5em 0;line-height:1.2}
+h2{font-size:1.4rem;margin:1.2em 0 .6em;color:var(--accent)}
+h3{font-size:1.15rem;margin:1em 0 .5em}
+h4{font-size:1rem;margin:.8em 0 .4em;color:var(--accent2)}
+p{margin:.6em 0}
+a{color:var(--accent)}
+ul,ol{margin:.6em 0;padding-left:1.4em}
+li{margin:.3em 0}
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:18px; margin:14px 0;
+}
+.card h3{margin-top:0}
+.callout{
+  border-left:3px solid var(--accent);
+  background:rgba(56,189,248,.08);
+  padding:12px 16px; margin:14px 0; border-radius:6px;
+}
+.callout.warn{border-color:var(--warn);background:rgba(245,158,11,.08)}
+.callout.danger{border-color:var(--danger);background:rgba(239,68,68,.08)}
+.callout.success{border-color:var(--success);background:rgba(16,185,129,.08)}
+pre{
+  background:#020617; border:1px solid var(--border);
+  border-radius:8px; padding:14px 14px 14px;
+  overflow-x:auto; font-size:13px; line-height:1.5;
+  position:relative; margin:10px 0;
+}
+body.light pre{background:#1e293b;color:#e2e8f0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+:not(pre)>code{
+  background:rgba(56,189,248,.15); padding:2px 6px;
+  border-radius:4px; font-size:.9em; color:var(--accent2);
+}
+.copy-btn{
+  position:absolute; top:8px; right:8px;
+  background:var(--accent); color:#0a0e1a;
+  border:none; padding:5px 10px; border-radius:6px;
+  font-size:11px; font-weight:700; cursor:pointer;
+  font-family:inherit; transition:all .2s; z-index:2;
+}
+.copy-btn:hover{opacity:.85}
+.copy-btn.ok{background:var(--success);color:#fff}
+table{
+  width:100%; border-collapse:collapse; margin:12px 0;
+  font-size:.92em; overflow-x:auto; display:block;
+}
+table thead, table tbody{display:table;width:100%}
+th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:rgba(56,189,248,.1);font-weight:700}
+body.light th{background:rgba(2,132,199,.1)}
+details{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:8px; padding:0; margin:10px 0;
+}
+details summary{
+  padding:12px 16px; cursor:pointer; font-weight:600;
+  list-style:none; display:flex; align-items:center;
+  justify-content:space-between; min-height:44px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:'+';font-size:1.3em;color:var(--accent);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details>*:not(summary){padding:0 16px 14px}
+.checklist{margin:12px 0}
+.checklist label{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; border-radius:6px; cursor:pointer; min-height:44px;
+}
+.checklist label:hover{background:rgba(56,189,248,.06)}
+.checklist input[type=checkbox]{
+  margin-top:3px; width:18px; height:18px;
+  accent-color:var(--accent); cursor:pointer; flex-shrink:0;
+}
+.checklist input:checked+span{color:var(--text2);text-decoration:line-through}
+#toolbar{
+  position:fixed; bottom:16px; right:16px;
+  display:flex; flex-direction:column; gap:8px; z-index:30;
+}
+.tool-btn{
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); width:44px; height:44px;
+  border-radius:50%; cursor:pointer; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.3); transition:all .2s;
+  font-family:inherit;
+}
+.tool-btn:hover{background:var(--accent);color:#0a0e1a}
+.tool-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero{
+  border:1px solid var(--border); border-radius:16px;
+  overflow:hidden; margin:0 0 20px; background:#05080f;
+}
+.hero svg{display:block;width:100%;height:auto}
+.tag{
+  display:inline-block; background:rgba(56,189,248,.15);
+  color:var(--accent); padding:2px 10px; border-radius:999px;
+  font-size:12px; font-weight:600; margin:2px 4px 2px 0;
+}
+.qa-item{
+  margin:14px 0; padding:14px; background:var(--card);
+  border:1px solid var(--border); border-radius:10px;
+}
+.qa-q{font-weight:700;color:var(--accent2);margin:0 0 6px}
+.qa-a{margin:0;color:var(--text)}
+.qa-level{
+  display:inline-block; padding:2px 10px; border-radius:999px;
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.5px; margin-bottom:8px;
+}
+.lv-basic{background:rgba(16,185,129,.2);color:#10b981}
+.lv-adv{background:rgba(245,158,11,.2);color:#f59e0b}
+.lv-pro{background:rgba(239,68,68,.2);color:#ef4444}
+.credit-name{
+  font-size:2.2rem; font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2),#a78bfa);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin:12px 0 4px; line-height:1.1;
+}
+.btn{
+  background:var(--accent); color:#0a0e1a; border:none;
+  padding:10px 20px; border-radius:8px; font-weight:700;
+  cursor:pointer; font-family:inherit; font-size:15px; min-height:44px;
+}
+.btn:hover{opacity:.9}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn.secondary:hover{background:rgba(56,189,248,.1);border-color:var(--accent)}
+@media (max-width:600px){
+  main{padding:14px}
+  h1{font-size:1.5rem}
+  h2{font-size:1.2rem}
+  .card{padding:14px}
+  #toolbar{bottom:12px;right:12px;gap:6px}
+  .tool-btn{width:40px;height:40px;font-size:16px}
+  .credit-name{font-size:1.7rem}
+}
+@media print{
+  @page{size:A4 portrait;margin:14mm 12mm}
+  body{background:#fff !important;color:#000 !important;font-size:11pt}
+  nav,#toolbar,#dr,#progress,#searchWrap,.copy-btn,#mb{display:none !important}
+  main{max-width:none;padding:0;margin:0}
+  section[data-tab]{display:block !important;page-break-before:always;padding-top:4mm}
+  section[data-tab]:first-child{page-break-before:auto;padding-top:0}
+  section[data-tab]::before{
+    content:attr(data-t);
+    display:block; font-size:18pt; font-weight:800; color:#000;
+    margin:0 0 8pt; border-bottom:2pt solid #000; padding-bottom:4pt;
+  }
+  .card,.callout,details,.qa-item{
+    background:#fff !important; border:1pt solid #999 !important; color:#000 !important;
+    page-break-inside:avoid;
+  }
+  details>*:not(summary){display:block !important}
+  pre{background:#f5f5f5 !important;color:#000 !important;border:1pt solid #999;white-space:pre-wrap}
+  :not(pre)>code{color:#000 !important;background:transparent !important}
+  th{background:#eee !important;color:#000 !important}
+  th,td{border:1pt solid #666 !important;color:#000 !important}
+  .hero{margin:0 0 10pt;page-break-inside:avoid}
+  .hero svg{width:100%;height:auto;max-height:180mm}
+  a{color:#000;text-decoration:underline}
+  h1,h2,h3,h4{color:#000 !important;page-break-after:avoid}
+  .credit-name{background:none !important;-webkit-text-fill-color:#000 !important;color:#000 !important}
+  mark.search-hit,mark.search-current{background:transparent !important;color:#000 !important}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav id="nav" role="navigation" aria-label="Navegación principal">
+  <button class="chip" id="mb" aria-label="Abrir índice" aria-expanded="false">☰ Índice</button>
+</nav>
+<div id="dr" role="navigation" aria-label="Índice de secciones"></div>
+<div id="searchWrap">
+  <input type="search" id="search" placeholder="Buscar en la sección actual…" aria-label="Buscar en el tutorial">
+  <span id="searchCount" aria-live="polite"></span>
+</div>
+<main id="main">
+
+<!-- ===== INICIO ===== -->
+<section data-tab="inicio" data-t="Inicio">
+  <div class="hero" data-svg-mount="a" role="img" aria-labelledby="ht-a hd-a"></div>
+  <h1>Skills para Gemini y ChatGPT</h1>
+  <p><strong>Tutorial completo y maestro.</strong> Aprende a construir automatizaciones portátiles, reutilizables e independientes de la plataforma usando el estándar <code>SKILL.md</code>.</p>
+  <p style="margin-top:18px">
+    <button class="btn secondary" id="ix" aria-label="Abrir índice lateral">☰ Ver índice</button>
+  </p>
+  <div class="card">
+    <h3>¿Qué vas a aprender?</h3>
+    <ul>
+      <li>Qué es una <strong>Skill</strong> y por qué reemplaza a los Gems y GPTs propietarios.</li>
+      <li>Cómo estructurar la carpeta y el archivo obligatorio <code>SKILL.md</code>.</li>
+      <li>Cómo redactar una <em>trigger description</em> que active la skill automáticamente.</li>
+      <li>Cómo adjuntar plantillas, documentos y scripts Python deterministas.</li>
+      <li>Cómo probar, depurar y evitar los 5 errores más comunes.</li>
+      <li>Cómo realizar la migración obligatoria antes de las fechas límite de 2026.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Cómo usar este tutorial</h3>
+    <ol>
+      <li>Usa la barra superior (o el botón <strong>☰ Índice</strong>) para navegar entre secciones.</li>
+      <li>Los bloques de código e instrucciones tienen un botón <strong>Copiar</strong>.</li>
+      <li>Puedes ajustar el tamaño de letra, cambiar de tema, imprimir o guardar como PDF desde los botones flotantes.</li>
+      <li>El progreso y tus preferencias se guardan automáticamente en tu navegador.</li>
+    </ol>
+  </div>
+  <div class="callout success">
+    <strong>Metodología:</strong> este tutorial sigue el ciclo <em>PLANIFICAR → CONSTRUIR → AUDITAR → CORREGIR → VERIFICAR → ENTREGAR</em>, adaptado a la creación de skills portátiles.
+  </div>
+  <p><span class="tag">Nivel: principiante a PRO</span><span class="tag">Sin dependencias externas</span><span class="tag">100% offline</span></p>
+  <p style="color:var(--text2);font-size:.9em">Versión V001 · Creado el 29/10/2026 — 18:14:33</p>
+</section>
+
+<!-- ===== CONCEPTOS ===== -->
+<section data-tab="conceptos" data-t="Conceptos">
+  <h1>Conceptos fundamentales</h1>
+
+  <h2>0 · Del paradigma de “cajas” a las Skills portátiles</h2>
+  <p>Durante años dependiste de contenedores propietarios: <strong>Gems</strong> en Gemini y <strong>GPTs</strong> en ChatGPT. El valor real nunca estuvo en la “caja”, sino en las instrucciones, plantillas y reglas de negocio que escribiste dentro.</p>
+  <p>Las <strong>Skills</strong> son un formato estándar y portátil: una carpeta con archivos que puedes mover entre plataformas sin reescribir nada.</p>
+
+  <h3>0.2 · ¿Qué es una Skill?</h3>
+  <p>Una Skill es una <strong>carpeta en tu ordenador</strong> que contiene:</p>
+  <ol>
+    <li><code>SKILL.md</code> — archivo obligatorio con los metadatos de activación y los pasos.</li>
+    <li>Archivos complementarios opcionales (plantillas <code>.md</code>, guías, glosarios).</li>
+    <li>Scripts opcionales (Python) dentro de una subcarpeta <code>scripts/</code>.</li>
+  </ol>
+  <p>A diferencia de un Gem o GPT, la IA <strong>decide sola</strong> cuándo abrir la skill cuando detecta que la petición encaja con su descripción.</p>
+
+  <h3>0.3 · La metáfora del chef</h3>
+  <div class="card">
+    <ul>
+      <li><strong>La ficha (<code>SKILL.md</code>)</strong> es la <em>receta</em>: nombre, cuándo cocinarla, pasos y presentación.</li>
+      <li><strong>Los archivos complementarios</strong> son los <em>ingredientes</em>: plantillas, listas, glosarios.</li>
+      <li><strong>El script</strong> es el <em>utensilio especializado</em>: la báscula que mide con exactitud lo que el chef no debe calcular “a ojo”.</li>
+    </ul>
+  </div>
+
+  <h3>0.4 · Los tres niveles de complejidad</h3>
+  <table>
+    <thead><tr><th>Nivel</th><th>Contenido</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Solo <code>SKILL.md</code></td><td>Resumen de reunión con formato fijo</td></tr>
+      <tr><td><strong>2</strong></td><td><code>SKILL.md</code> + documentos</td><td>Acta corporativa con plantilla</td></tr>
+      <tr><td><strong>3</strong></td><td><code>SKILL.md</code> + documentos + <code>scripts/</code></td><td>Acta con auditoría determinista de cifras</td></tr>
+    </tbody>
+  </table>
+
+  <h2>1 · Anatomía interna de una Skill</h2>
+  <h3>1.1 · <code>SKILL.md</code></h3>
+  <p>Es un archivo de texto plano, en mayúsculas y con extensión <code>.md</code>. Se divide en dos bloques:</p>
+  <ul>
+    <li><strong>Frontmatter YAML</strong>: delimitado por <code>---</code>, contiene <code>name</code> y <code>description</code>.</li>
+    <li><strong>Cuerpo Markdown</strong>: secciones <code>## Pasos</code> y <code>## Estilo</code>.</li>
+  </ul>
+
+  <h3>1.2 · El encabezado Frontmatter</h3>
+  <pre><code>---
+name: resumen-reunion
+description: Convierte notas o transcripciones de reuniones en un acta con decisiones, tareas y responsables. Usar cuando el usuario pegue notas de una reunión o diga "haz el acta", "resume la reunión", "saca las tareas" o "qué quedó pendiente".
+---</code></pre>
+  <ul>
+    <li><code>name</code>: minúsculas, sin espacios, con guiones. En Gemini la carpeta local debe llamarse exactamente igual.</li>
+    <li><code>description</code>: <strong>la línea más crítica</strong>. Es lo que lee la IA para decidir si abre la skill.</li>
+  </ul>
+
+  <h3>1.3 · El cuerpo de instrucciones</h3>
+  <p>Usa verbos en imperativo, orden cronológico y reglas explícitas para datos faltantes:</p>
+  <pre><code># Resumen de reunión
+
+## Pasos
+1. Lee todo el texto recibido antes de escribir ninguna respuesta.
+2. Clasifica la información en decisiones, tareas pendientes y temas aplazados.
+3. Asigna responsable y fecha a cada tarea; si no constan, escribe "sin asignar".
+4. Redacta el acta final respetando el archivo plantilla-acta.md.
+5. Agrega una sección "Dudas no resueltas".</code></pre>
+
+  <h3>1.4 · El bloque de estilo</h3>
+  <pre><code>## Estilo
+- Frases cortas y concisas, sin adjetivos innecesarios.
+- Tono profesional y directo.
+- REGLA DE ORO: Nunca inventes una decisión o tarea que no esté en el texto.</code></pre>
+
+  <h2>2 · El disparador automático (trigger description)</h2>
+  <div class="callout warn">
+    <strong>Causa raíz del fallo en el 90% de las skills inactivas:</strong> la <code>description</code> explica <em>qué es</em> la skill, en lugar de <em>cuándo debe activarse</em>.
+  </div>
+
+  <h3>2.2 · La Fórmula Maestra</h3>
+  <pre><code>FÓRMULA = [Qué hace] + [Cuándo usarla] + ["Frases literales del usuario"]</code></pre>
+
+  <h3>2.3 · Comparativa de descripciones</h3>
+  <table>
+    <thead><tr><th>Tipo</th><th>Texto</th><th>Activación</th></tr></thead>
+    <tbody>
+      <tr><td>Nula</td><td><code>Asistente para reuniones.</code></td><td>❌ Nunca</td></tr>
+      <tr><td>Intermitente</td><td><code>Resume reuniones y extrae tareas.</code></td><td>⚠️ A veces</td></tr>
+      <tr><td>Perfecta</td><td><code>Convierte notas… Usar cuando el usuario diga "haz el acta", "resume la reunión"…</code></td><td>✅ Siempre</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 · Tres reglas de oro</h3>
+  <ol>
+    <li><strong>Diferencia por contexto, no por nombre.</strong></li>
+    <li><strong>No incluyas el procedimiento en la descripción.</strong></li>
+    <li><strong>Mantén la descripción breve</strong> (2-3 líneas).</li>
+  </ol>
+
+  <h3>2.5 · Invocación manual con <code>/</code> en Gemini</h3>
+  <p>Si la IA no activa la skill, escribe <code>/</code> en el chat y selecciona la skill del menú.</p>
+
+  <h2>3 · Arquitectura de la información en 3 capas</h2>
+  <table>
+    <thead><tr><th>Capa</th><th>Qué contiene</th><th>Dónde va</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Lo que es verdad SIEMPRE (idioma, tono, rol)</td><td>Instrucciones personalizadas de la cuenta</td></tr>
+      <tr><td><strong>2</strong></td><td>Procedimiento repetible</td><td>La Skill (<code>SKILL.md</code>)</td></tr>
+      <tr><td><strong>3</strong></td><td>Contexto con fecha de caducidad</td><td>Proyecto / carpeta de chats</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.3 · Las 4 preguntas clave</h3>
+  <ol>
+    <li>¿Es verdad en cualquier conversación? → <strong>Capa 1</strong>.</li>
+    <li>¿Describe cómo se ejecuta paso a paso? → <strong>Pasos de la skill</strong>.</li>
+    <li>¿Describe el formato de salida? → <strong>Estilo o plantilla</strong>.</li>
+    <li>¿Habla de un cliente concreto con fecha límite? → <strong>Proyecto</strong>.</li>
+  </ol>
+</section>
+
+<!-- ===== PROCEDIMIENTO ===== -->
+<section data-tab="procedimiento" data-t="Procedimiento">
+  <h1>Procedimiento paso a paso</h1>
+
+  <h2>4 · Skills con documentos y la trampa de Gemini</h2>
+  <div class="callout danger">
+    <strong>ATENCIÓN:</strong> el formulario web “Crear manualmente” de Gemini <strong>solo</strong> admite texto. No tiene botón para adjuntar documentos ni scripts.
+  </div>
+
+  <h3>4.1 · Los dos métodos de Gemini</h3>
+  <table>
+    <thead><tr><th>Método</th><th>Instrucciones</th><th>Documentos</th><th>Scripts</th></tr></thead>
+    <tbody>
+      <tr><td>Crear manualmente (web)</td><td>✅</td><td>❌</td><td>❌</td></tr>
+      <tr><td>Subir (carpeta o .zip)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    </tbody>
+  </table>
+  <p>La subida solo funciona desde el <strong>navegador de escritorio</strong> o la <strong>app de Mac</strong>. No está disponible en móvil.</p>
+
+  <h3>4.2 · Estructura física de la carpeta</h3>
+  <pre><code>resumen-reunion/            ← Igual que 'name'
+├── SKILL.md                ← Raíz
+├── plantilla-acta.md
+├── ejemplos.md
+└── scripts/
+    └── contar.py</code></pre>
+
+  <h3>4.3 · Usa texto plano</h3>
+  <p>Convierte tus plantillas Word o PDF a <code>.md</code> o <code>.txt</code>. Las LLM procesan texto plano con mucha mayor precisión.</p>
+
+  <h3>4.4 · Citación explícita</h3>
+  <pre><code>✅ CORRECTO:
+4. Escribe el acta final aplicando el formato del archivo plantilla-acta.md.
+
+❌ INCORRECTO:
+4. Escribe el acta final usando la plantilla de la carpeta.</code></pre>
+
+  <h3>4.5 · Subir o reemplazar</h3>
+  <ol>
+    <li>Prepara la carpeta en tu ordenador respetando la estructura plana.</li>
+    <li>Abre Gemini en el navegador → Ajustes → Skills.</li>
+    <li>Haz clic en <strong>Subir</strong> y elige la carpeta o el <code>.zip</code>.</li>
+    <li>Para actualizar: descarga la skill desde Skills (obtendrás un <code>.zip</code>), modifica la carpeta local y pulsa <strong>Reemplazar skill</strong>.</li>
+  </ol>
+
+  <h2>5 · Skills con scripts Python</h2>
+  <h3>5.1 · Probabilístico vs determinista</h3>
+  <p>Las LLM son excelentes redactando, pero pésimas en cálculos exactos. Un <strong>script Python</strong> entrega siempre el mismo resultado para la misma entrada: eso es <em>determinismo</em>.</p>
+
+  <h3>5.2 · Estructura</h3>
+  <pre><code>resumen-reunion/
+├── SKILL.md
+├── plantilla-acta.md
+└── scripts/
+    └── contar.py</code></pre>
+
+  <h3>5.3 · La instrucción de control indispensable</h3>
+  <pre><code>## Pasos
+1. Lee el texto recibido.
+2. Ejecuta scripts/contar.py sobre el texto y utiliza la cifra devuelta.
+3. REGLA OBLIGATORIA: No calcules ni adivines las cifras tú mismo;
+   utiliza exclusivamente el resultado entregado por el script.</code></pre>
+
+  <h3>5.4 · Casos de uso</h3>
+  <ul>
+    <li>Conteos exactos de palabras, párrafos o líneas.</li>
+    <li>Cálculos financieros con tarifas fijas.</li>
+    <li>Generación de códigos de verificación.</li>
+    <li>Validación de formatos y rangos numéricos.</li>
+  </ul>
+
+  <h3>5.5 · Limitaciones técnicas</h3>
+  <div class="callout warn">
+    <ul style="margin:0">
+      <li><strong>Gemini:</strong> los scripts se ejecutan en un entorno offline sin acceso a internet.</li>
+      <li><strong>ChatGPT:</strong> los complementos migrados no ejecutan scripts locales. Usa el <em>Code Interpreter</em> del chat para que la IA escriba y ejecute el código en la sesión.</li>
+    </ul>
+  </div>
+
+  <h2>6 · Comparativa y fechas límite</h2>
+  <h3>6.1 · Cuadro comparativo</h3>
+  <table>
+    <thead><tr><th>Función</th><th>Gemini</th><th>ChatGPT</th></tr></thead>
+    <tbody>
+      <tr><td>Ubicación</td><td>Ajustes → Skills</td><td>Complementos / Plugins</td></tr>
+      <tr><td>Creación</td><td>Manual o subida .zip</td><td>Complemento o migración de GPT</td></tr>
+      <tr><td>Documentos</td><td>Solo vía subida</td><td>Integrados</td></tr>
+      <tr><td>Scripts locales</td><td>✅</td><td>❌ en migrados</td></tr>
+      <tr><td>Activación</td><td>Automática o <code>/</code></td><td>Automática</td></tr>
+      <tr><td>Móvil</td><td>Se usan, no se crean</td><td>Se usan y ejecutan</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 · Fecha límite para Gemini</h3>
+  <div class="callout">
+    <strong>17 de noviembre de 2026.</strong> Google convertirá automáticamente los Gems a Skills. Recomendación: recrea manualmente los más importantes en <code>SKILL.md</code> antes de la conversión.
+  </div>
+
+  <h3>6.3 · Fecha límite para ChatGPT</h3>
+  <div class="callout danger">
+    <strong>11 de diciembre de 2026.</strong> La migración es manual. Cualquier GPT que no hayas migrado a Complemento antes de esa fecha desaparecerá definitivamente.
+  </div>
+
+  <h3>6.4 · Migración manual paso a paso (ChatGPT)</h3>
+  <ol>
+    <li>Publica el GPT como privado (los borradores no se migran).</li>
+    <li>Entra a <em>Mis GPTs</em>.</li>
+    <li>Selecciona <em>Migrar a complemento</em>.</li>
+    <li>Verifica que la skill mantenga instrucciones y archivos.</li>
+  </ol>
+</section>
+
+<!-- ===== PRÁCTICA ===== -->
+<section data-tab="practica" data-t="Práctica">
+  <h1>Proyectos integradores</h1>
+
+  <h2>8.1 · Nivel 1: <code>resumen-reunion</code> básico</h2>
+  <p><strong>Objetivo:</strong> crear una skill de solo instrucciones que convierta notas en un acta.</p>
+  <pre><code>resumen-reunion/
+└── SKILL.md</code></pre>
+  <p>Contenido de <code>SKILL.md</code>:</p>
+  <pre><code>---
+name: resumen-reunion
+description: Convierte la transcripción o notas de una reunión en un acta organizada con decisiones, tareas y responsables. Usar cuando el usuario pegue notas de una reunión o pida "haz el acta", "resume la reunión", "saca las tareas" o "qué quedó pendiente".
+---
+
+# Resumen de reunión
+
+## Pasos
+1. Lee todo el texto recibido antes de generar la respuesta.
+2. Clasifica la información en decisiones, tareas pendientes y temas aplazados.
+3. Asigna responsable y fecha a cada tarea. Si no constan, escribe "Sin asignar".
+4. Redacta el resultado final con viñetas.
+5. Agrega una sección "Puntos ambiguos" si hay contradicciones.
+
+## Estilo
+- Frases directas y concisas.
+- Sin adjetivos ni juicios de valor.
+- REGLA DE ORO: no inventes ninguna decisión o tarea.</code></pre>
+
+  <h2>8.2 · Nivel 2: con plantilla <code>plantilla-acta.md</code></h2>
+  <pre><code>resumen-reunion/
+├── SKILL.md
+└── plantilla-acta.md</code></pre>
+  <p><code>plantilla-acta.md</code>:</p>
+  <pre><code># ACTA DE REUNIÓN CORPORATIVA
+
+**Fecha:** {{FECHA}}
+**Proyecto:** {{DEPARTAMENTO}}
+
+## 1. DECISIONES ADOPTADAS
+- [Decisión 1]
+
+## 2. COMPROMISOS Y TAREAS
+| Tarea | Responsable | Fecha Límite |
+| :--- | :--- | :--- |
+| [Descripción] | [Nombre] | [DD/MM/AAAA] |
+
+## 3. TEMAS APLAZADOS
+- [Tema 1]
+
+## 4. OBSERVACIONES
+- [Observación 1]</code></pre>
+  <p><code>SKILL.md</code> actualizado:</p>
+  <pre><code>---
+name: resumen-reunion
+description: Convierte notas de reunión en un acta estructurada según el formato corporativo. Usar cuando el usuario diga "haz el acta", "resume la reunión" o "saca las tareas".
+---
+
+# Resumen de reunión corporativo
+
+## Pasos
+1. Lee la transcripción proporcionada por el usuario.
+2. Extrae decisiones, tareas con responsable y temas aplazados.
+3. Genera el documento aplicando la estructura de plantilla-acta.md.
+4. Rellena la tabla. Si un dato falta, escribe "Sin asignar".
+
+## Estilo
+- Presentación profesional y sobria.
+- Sigue exactamente el esquema de plantilla-acta.md.</code></pre>
+
+  <h2>8.3 · Nivel 3: con plantilla y script Python</h2>
+  <pre><code>resumen-reunion/
+├── SKILL.md
+├── plantilla-acta.md
+└── scripts/
+    └── contar.py</code></pre>
+  <p><code>scripts/contar.py</code> (conceptual):</p>
+  <pre><code># Programa de conteo y auditoría
+# Recibe el texto generado y calcula líneas y palabras exactas.</code></pre>
+  <p><code>SKILL.md</code> final:</p>
+  <pre><code>---
+name: resumen-reunion
+description: Procesa transcripciones de reuniones, genera un acta corporativa y ejecuta una auditoría de métricas. Usar cuando el usuario diga "haz el acta", "resume la reunión" o "audita la reunión".
+---
+
+# Resumen de reunión con auditoría
+
+## Pasos
+1. Lee las notas de la reunión.
+2. Estructura el acta respetando plantilla-acta.md.
+3. Ejecuta scripts/contar.py sobre el acta generada.
+4. Agrega los resultados al final en "Métricas de Calidad".
+5. REGLA OBLIGATORIA: no calcules ni adivines las cifras; usa estrictamente
+   los valores entregados por scripts/contar.py.
+
+## Estilo
+- Formato técnico, limpio y riguroso.</code></pre>
+  <div class="callout success">
+    <strong>Ejercicio:</strong> prueba a crear tu propia skill Nivel 1 sobre un flujo que repitas habitualmente (informes, correos, resúmenes). Luego añade una plantilla y, si aplica, un script.
+  </div>
+</section>
+
+<!-- ===== 33 PREGUNTAS (Q&A) ===== -->
+<section data-tab="qa" data-t="33 Preguntas (Q&amp;A)">
+  <h1>33 Preguntas y Respuestas (Q&amp;A)</h1>
+  <p>Ordenadas por nivel de dificultad: <span class="qa-level lv-basic">Básico</span> <span class="qa-level lv-adv">Avanzado</span> <span class="qa-level lv-pro">PRO</span></p>
+
+  <h2>Nivel Básico (1 – 11)</h2>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q1</div><p class="qa-q">¿Qué ventaja principal tiene una Skill sobre un Gem o un GPT?</p><p class="qa-a">La <strong>portabilidad e independencia</strong>. Un Gem o GPT vive atrapado en su plataforma; una Skill es una carpeta estándar que puedes usar en Gemini, ChatGPT u otros entornos compatibles.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q2</div><p class="qa-q">¿Es obligatorio saber programar?</p><p class="qa-a">No. Los niveles 1 y 2 se redactan en texto plano. Para el nivel 3, puedes pedir a la IA que escriba el script Python por ti.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q3</div><p class="qa-q">¿Cómo se debe llamar el archivo principal?</p><p class="qa-a">Exactamente <code>SKILL.md</code>, en mayúsculas y con extensión <code>.md</code>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q4</div><p class="qa-q">¿Qué ocurre si la carpeta no coincide con <code>name</code> en Gemini?</p><p class="qa-a">La subida falla o los archivos vinculados no cargan. En Gemini el nombre de la carpeta local debe coincidir exactamente con <code>name</code>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q5</div><p class="qa-q">¿Cuál es el campo más importante para activar la skill?</p><p class="qa-a">El parámetro <code>description</code> del Frontmatter YAML.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q6</div><p class="qa-q">¿Por qué no se activa una skill con la descripción “Asistente de ventas”?</p><p class="qa-a">Porque indica <em>qué es</em>, pero omite la situación de uso y las frases clave que escribe el usuario.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q7</div><p class="qa-q">¿Se pueden usar varias skills en un mismo chat?</p><p class="qa-a">Sí. Gemini y ChatGPT combinan skills según surjan las necesidades en el hilo.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q8</div><p class="qa-q">¿Cómo se invoca una skill manualmente en Gemini?</p><p class="qa-a">Escribiendo <code>/</code> en la caja de texto del chat para desplegar el menú de skills.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q9</div><p class="qa-q">¿Dónde van las instrucciones sobre tu rol e idioma?</p><p class="qa-a">En la capa de <strong>Instrucciones Personalizadas</strong> de tu cuenta, no dentro de la skill.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q10</div><p class="qa-q">¿Qué es el formato de texto plano y por qué se recomienda?</p><p class="qa-a">Texto sin formato enriquecido ni código oculto (archivos <code>.md</code> o <code>.txt</code>). Las LLM lo procesan con máxima precisión.</p></div>
+  <div class="qa-item"><div class="qa-level lv-basic">Básico · Q11</div><p class="qa-q">¿Puedo crear o subir skills desde la app móvil de Gemini?</p><p class="qa-a">No. Requiere navegador de escritorio o app de Mac.</p></div>
+
+  <h2>Nivel Avanzado (12 – 22)</h2>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q12</div><p class="qa-q">¿Por qué falla “Crear manualmente” cuando necesito adjuntar plantillas?</p><p class="qa-a">Porque ese formulario solo admite texto; no tiene interfaz para subir archivos.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q13</div><p class="qa-q">¿Cómo referencio los documentos dentro de <code>SKILL.md</code>?</p><p class="qa-a">Citándolos explícitamente por nombre y extensión (<code>plantilla-acta.md</code>). Si no aparecen citados, la IA los ignora.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q14</div><p class="qa-q">¿Qué función tiene la sección <code>## Estilo</code>?</p><p class="qa-a">Establecer tono, formato, extensión y prohibiciones estrictas.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q15</div><p class="qa-q">¿Por qué las LLM fallan al contar palabras o calcular con precisión?</p><p class="qa-a">Porque son modelos probabilísticos, no calculadoras deterministas.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q16</div><p class="qa-q">¿Dónde se guardan los scripts?</p><p class="qa-a">En la subcarpeta <code>scripts/</code>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q17</div><p class="qa-q">¿Qué frase de control es imprescindible con scripts?</p><p class="qa-a">“No calcules ni adivines las cifras tú mismo; utiliza únicamente el resultado del script”.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q18</div><p class="qa-q">¿Pueden los scripts de Gemini acceder a internet?</p><p class="qa-a">No. Se ejecutan en un entorno offline aislado.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q19</div><p class="qa-q">¿Y en los complementos migrados de ChatGPT?</p><p class="qa-a">No admiten scripts locales. Debes instruir a la IA para que escriba y ejecute el código en el <em>Code Interpreter</em> del chat.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q20</div><p class="qa-q">¿Qué estructura debe tener el <code>.zip</code> para Gemini?</p><p class="qa-a"><code>SKILL.md</code> en la raíz, documentos al mismo nivel y la subcarpeta <code>scripts/</code> si existe.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q21</div><p class="qa-q">¿Cómo actualizo una skill ya subida?</p><p class="qa-a">Descárgala desde Ajustes → Skills (obtienes un <code>.zip</code>), modifica la carpeta local y pulsa <strong>Reemplazar skill</strong>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-adv">Avanzado · Q22</div><p class="qa-q">¿Qué archivos NO deben ir en una skill?</p><p class="qa-a">Documentos voluminosos, expedientes de un cliente concreto o información con caducidad cercana.</p></div>
+
+  <h2>Nivel PRO (23 – 33)</h2>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q23</div><p class="qa-q">¿Fecha límite de conversión automática de Gems en Gemini?</p><p class="qa-a"><strong>17 de noviembre de 2026</strong> (cuentas personales).</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q24</div><p class="qa-q">¿Fecha límite obligatoria para migrar GPTs en ChatGPT?</p><p class="qa-a"><strong>11 de diciembre de 2026</strong>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q25</div><p class="qa-q">¿Qué ocurre si no migro un GPT antes de la fecha?</p><p class="qa-a">Desaparece definitivamente.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q26</div><p class="qa-q">¿Qué paso previo es indispensable antes de migrar un GPT en borrador?</p><p class="qa-a">Publicarlo, aunque sea de forma privada. Los borradores no se pueden migrar.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q27</div><p class="qa-q">¿En qué consiste el criterio de las 3 activaciones consecutivas?</p><p class="qa-a">La skill se considera terminada cuando se activa sola en 3 chats nuevos con frases y peticiones distintas.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q28</div><p class="qa-q">¿En qué consiste el test de Petición Límite (Falso Positivo)?</p><p class="qa-a">Pedir una tarea parecida pero ajena al propósito de la skill, para verificar que la descripción no sea demasiado amplia.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q29</div><p class="qa-q">¿Cómo se resuelve una colisión entre dos skills?</p><p class="qa-a">Acotando ambos <code>description</code> para diferenciarlos por situación de uso concreta, no por palabras genéricas.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q30</div><p class="qa-q">¿Cómo corregir una skill que redacta “como personaje” y no sigue instrucciones?</p><p class="qa-a">Reescribe los pasos con verbos imperativos numerados, elimina frases de rol (“eres un experto en…”) y añade un ejemplo de formato esperado.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q31</div><p class="qa-q">¿Cómo funciona el Prompt Meta-Analítico?</p><p class="qa-a">Adjuntas <code>SKILL.md</code> a un chat y describes la frase con la que la skill falló. La IA analiza el YAML y propone una nueva <code>description</code>.</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q32</div><p class="qa-q">¿Por qué las Skills son la base de los agentes autónomos?</p><p class="qa-a">Porque combinan los tres pilares de un agente: motor de decisión (SKILL.md), memoria/archivos (documentos) y herramientas deterministas (scripts).</p></div>
+  <div class="qa-item"><div class="qa-level lv-pro">PRO · Q33</div><p class="qa-q">¿Dónde se ubica la documentación y comunidad de origen del método?</p><p class="qa-a">En la AcademIA de IA en Acción, creada por <strong>Xavier Mitjana</strong> (<code>iaenaccion.com</code>).</p></div>
+</section>
+
+<!-- ===== ERRORES ===== -->
+<section data-tab="errores" data-t="Errores">
+  <h1>Protocolo de pruebas, depuración y errores comunes</h1>
+
+  <h2>7.1 · Criterio de finalización</h2>
+  <div class="callout success">
+    Una skill no está lista cuando terminas de redactarla. Está lista cuando se activa sola en <strong>3 conversaciones consecutivas</strong> con peticiones distintas.
+  </div>
+
+  <h2>7.2 · Protocolo de prueba en 4 pasos</h2>
+  <ol>
+    <li><strong>Petición habitual.</strong> En un chat nuevo, usa tus palabras cotidianas. La skill debe abrirse sola.</li>
+    <li><strong>Variantes.</strong> En otro chat, usa sinónimos. Si no se activa, añade esas expresiones entre comillas al <code>description</code>.</li>
+    <li><strong>Petición límite (falso positivo).</strong> Pide algo parecido pero ajeno. Si la skill se abre, la descripción es demasiado vaga.</li>
+    <li><strong>Comparación.</strong> Revisa la salida. Si faltan datos, añade pasos; si sobra información, añade restricciones en <code>## Estilo</code>.</li>
+  </ol>
+
+  <h2>7.3 · Los 5 errores más comunes</h2>
+  <details>
+    <summary>Error 1 — La skill no se activa nunca</summary>
+    <p><strong>Causa:</strong> la descripción dice qué es, no cuándo se usa.</p>
+    <p><strong>Solución:</strong> aplica la Fórmula Maestra con situación + frases literales entre comillas.</p>
+  </details>
+  <details>
+    <summary>Error 2 — La skill se activa cuando no corresponde</summary>
+    <p><strong>Causa:</strong> colisión con otra skill o descripción demasiado amplia.</p>
+    <p><strong>Solución:</strong> diferencia ambas por contexto de uso específico.</p>
+  </details>
+  <details>
+    <summary>Error 3 — La subida falla o no se ven los archivos</summary>
+    <p><strong>Causa:</strong> nombre de carpeta distinto al <code>name</code>, <code>SKILL.md</code> fuera de la raíz o uso del formulario manual.</p>
+    <p><strong>Solución:</strong> renombra la carpeta, coloca <code>SKILL.md</code> en la raíz y sube carpeta o <code>.zip</code> desde el botón <strong>Subir</strong>.</p>
+  </details>
+  <details>
+    <summary>Error 4 — El resultado es peor que con el Gem anterior</summary>
+    <p><strong>Causa:</strong> instrucciones redactadas como descripción de personaje.</p>
+    <p><strong>Solución:</strong> reescribe con verbos imperativos numerados e incluye una plantilla de ejemplo.</p>
+  </details>
+  <details>
+    <summary>Error 5 — La IA ignora el script o los documentos</summary>
+    <p><strong>Causa:</strong> la ficha no cita el archivo por su nombre exacto o falta la orden explícita.</p>
+    <p><strong>Solución:</strong> escribe “Ejecuta <code>scripts/contar.py</code> sobre el texto recibido; no calcules las cifras tú”.</p>
+  </details>
+
+  <h2>7.4 · Prompt meta-analítico de depuración</h2>
+  <p>Si la skill sigue fallando, abre un chat y envía el siguiente prompt junto a tu <code>SKILL.md</code>:</p>
+  <pre><code>Esta skill no se activa automáticamente cuando escribo la frase "[Escribe aquí tu frase]". Analiza el encabezado YAML y la descripción de mi archivo SKILL.md y sugiere la modificación exacta del parámetro description para solucionar el problema.</code></pre>
+</section>
+
+<!-- ===== RESUMEN ===== -->
+<section data-tab="resumen" data-t="Resumen">
+  <h1>Resumen y glosario</h1>
+
+  <div class="card">
+    <h3>Resumen ejecutivo</h3>
+    <ul>
+      <li>Una <strong>Skill</strong> es una carpeta portátil que contiene <code>SKILL.md</code>, documentos y/o scripts.</li>
+      <li>La activación automática depende casi por completo del campo <code>description</code>.</li>
+      <li>Existen 3 niveles: solo instrucciones, con documentos, con scripts Python.</li>
+      <li>En Gemini debes subir la carpeta o <code>.zip</code> desde el navegador de escritorio.</li>
+      <li>Los scripts dan precisión determinista; la regla de oro es <em>“no calcules tú las cifras”</em>.</li>
+      <li>Fechas límite: <strong>17/11/2026</strong> (Gemini) y <strong>11/12/2026</strong> (ChatGPT).</li>
+      <li>Una skill está lista cuando se activa sola 3 veces consecutivas con peticiones distintas.</li>
+    </ul>
+  </div>
+
+  <h2>Glosario</h2>
+  <details>
+    <summary>Skill, SKILL.md, Frontmatter, Trigger, Script y más</summary>
+    <ul>
+      <li><strong>Skill</strong>: carpeta estructurada e independiente que empaqueta metadatos, instrucciones, plantillas y scripts.</li>
+      <li><strong><code>SKILL.md</code></strong>: archivo obligatorio en la raíz de la skill.</li>
+      <li><strong>Frontmatter / YAML</strong>: encabezado delimitado por <code>---</code> que contiene <code>name</code> y <code>description</code>.</li>
+      <li><strong>Trigger / Disparador</strong>: <code>description</code> que la IA lee para decidir si activa la skill.</li>
+      <li><strong>Script</strong>: pequeño programa (usualmente Python) en <code>scripts/</code> con resultados deterministas.</li>
+      <li><strong>Gem</strong>: asistente personalizado de Gemini (en vías de sustitución).</li>
+      <li><strong>GPT</strong>: asistente personalizado de ChatGPT (en vías de sustitución por Complementos).</li>
+      <li><strong>Complemento (Plugin)</strong>: extensión de ChatGPT que aloja skills migradas.</li>
+      <li><strong>Determinismo</strong>: propiedad por la cual la misma entrada produce siempre la misma salida.</li>
+      <li><strong>Agente Autónomo</strong>: sistema de IA capaz de ejecutar tareas encadenadas con herramientas, archivos y scripts.</li>
+    </ul>
+  </details>
+
+  <h2>Checklist final</h2>
+  <div class="checklist">
+    <label><input type="checkbox" data-ck="a1"><span>He leído la guía completa y comprendo qué es una Skill.</span></label>
+    <label><input type="checkbox" data-ck="a2"><span>He clasificado mi información en las 3 capas (personalizada / skill / proyecto).</span></label>
+    <label><input type="checkbox" data-ck="a3"><span>He creado al menos una skill de Nivel 1 con <code>SKILL.md</code>.</span></label>
+    <label><input type="checkbox" data-ck="a4"><span>La skill se ha activado sola 3 veces consecutivas con frases distintas.</span></label>
+    <label><input type="checkbox" data-ck="a5"><span>He probado la Petición Límite (falso positivo) y no se activa por error.</span></label>
+    <label><input type="checkbox" data-ck="a6"><span>He añadido una plantilla y la he citado por nombre exacto en la ficha.</span></label>
+    <label><input type="checkbox" data-ck="a7"><span>He configurado un script (si procede) con la orden “no calcules tú”.</span></label>
+    <label><input type="checkbox" data-ck="a8"><span>He migrado (o planeado migrar) mis Gems/GPTs antes de las fechas límite.</span></label>
+    <label><input type="checkbox" data-ck="a9"><span>He hecho una copia de seguridad de mis skills en local.</span></label>
+    <label><input type="checkbox" data-ck="a10"><span>He añadido las fechas límite a mi calendario.</span></label>
+  </div>
+</section>
+
+<!-- ===== PROMPTS ===== -->
+<section data-tab="prompts" data-t="Prompts">
+  <h1>Prompts y plantillas reutilizables</h1>
+  <p>Todos los bloques incluyen un botón <strong>Copiar</strong>. La descripción indica en qué momento del flujo se emplea cada uno.</p>
+
+  <h2>1 · Prompt de depuración meta-analítico</h2>
+  <p><strong>¿Dónde se usa?</strong> Cuando una skill no se activa automáticamente y quieres que la IA analice tu <code>SKILL.md</code> y proponga una nueva <code>description</code>. Añade el archivo al chat junto con este prompt.</p>
+  <pre><code>Esta skill no se activa automáticamente cuando escribo la frase "[Escribe aquí tu frase]". Analiza el encabezado YAML y la descripción de mi archivo SKILL.md y sugiere la modificación exacta del parámetro description para solucionar el problema.</code></pre>
+
+  <h2>2 · Fórmula Maestra para la descripción</h2>
+  <p><strong>¿Dónde se usa?</strong> Al redactar el campo <code>description</code> del Frontmatter. Aplícala cada vez que crees o edites una skill para garantizar la activación automática.</p>
+  <pre><code>[Qué hace en una frase con verbo de acción] + [Cuándo debe activarse] + ["Frase literal 1", "Frase literal 2", "Frase literal 3"]</code></pre>
+
+  <h2>3 · Plantilla base de <code>SKILL.md</code></h2>
+  <p><strong>¿Dónde se usa?</strong> Como punto de partida para cualquier skill de Nivel 1. Copia, renombra <code>name</code> y ajusta pasos y estilo.</p>
+  <pre><code>---
+name: mi-skill
+description: [Qué hace]. Usar cuando el usuario diga "frase 1", "frase 2" o "frase 3".
+---
+
+# Nombre descriptivo
+
+## Pasos
+1. Lee la entrada completa antes de responder.
+2. [Acción 2 con verbo imperativo].
+3. [Acción 3 con regla para datos faltantes].
+4. [Acción 4 de formato/salida].
+
+## Estilo
+- Frases cortas y directas.
+- Tono profesional.
+- REGLA DE ORO: no inventes información que no esté en la entrada.</code></pre>
+
+  <h2>4 · Instrucción de control para scripts</h2>
+  <p><strong>¿Dónde se usa?</strong> En la sección <code>## Pasos</code> de cualquier skill Nivel 3, justo después de indicar la ejecución del script. Evita que el modelo sustituya el cálculo por una estimación probabilística.</p>
+  <pre><code>REGLA OBLIGATORIA: No calcules ni adivines las cifras tú mismo. Utiliza exclusivamente los valores devueltos por el script indicado. Si el script no devuelve un valor, repite la ejecución antes de responder.</code></pre>
+
+  <h2>5 · Frases literales para el trigger</h2>
+  <p><strong>¿Dónde se usa?</strong> Como lista de expresiones a incluir entre comillas dentro del campo <code>description</code>, para maximizar la tasa de activación automática.</p>
+  <pre><code>"haz el acta", "resume la reunión", "saca las tareas", "qué quedó pendiente", "prepara el acta", "resumen de la reunión"</code></pre>
+
+  <h2>6 · Prompt para migrar un GPT a Complemento (ChatGPT)</h2>
+  <p><strong>¿Dónde se usa?</strong> Al abrir el flujo de migración en ChatGPT, para verificar que la conversión preserve todas las instrucciones y archivos.</p>
+  <pre><code>Estoy migrando mi GPT "[nombre]" a un Complemento. Revisa las instrucciones que te pego a continuación y comprueba que:
+1. Todas las reglas de negocio están incluidas.
+2. Las referencias a archivos adjuntos se mantienen.
+3. No hay instrucciones contradictorias.
+4. El formato de salida esperado está descrito paso a paso.
+Devuelve una lista de mejoras concretas antes de confirmar la migración.</code></pre>
+</section>
+
+<!-- ===== FUENTES ===== -->
+<section data-tab="fuentes" data-t="Fuentes">
+  <h1>Fuentes y documentación oficial</h1>
+
+  <h2>Documentación oficial</h2>
+  <ul>
+    <li><strong>Google Gemini:</strong> Centro de Ayuda — <em>Gestión y configuración de Skills en Gemini</em>. Guía de desarrollo de componentes y automatizaciones de Google Workspace.</li>
+    <li><strong>OpenAI ChatGPT:</strong> Help Center — <em>Migración de GPTs a Complementos (Plugins)</em>. Guía de especificaciones técnicas para complementos.</li>
+  </ul>
+
+  <h2>Guía de origen y metodología</h2>
+  <ul>
+    <li><em>Guía de Skills para Gemini y ChatGPT</em> — <strong>Xavier Mitjana</strong>, AcademIA de IA en Acción · <code>iaenaccion.com</code>.</li>
+  </ul>
+
+  <div class="callout">
+    Este tutorial reorganiza y amplía pedagógicamente la guía original, conservando su significado. Los datos sobre fechas límite y plataformas corresponden al material fuente consultado el 29/10/2026.
+  </div>
+</section>
+
+<!-- ===== CRÉDITOS ===== -->
+<section data-tab="creditos" data-t="Créditos">
+  <h1>Créditos</h1>
+  <div class="hero" data-svg-mount="b" role="img" aria-labelledby="ht-b hd-b"></div>
+  <p>Ilustración animada: una carpeta <code>SKILL.md</code> central emite partículas de datos hacia nodos de IA (Gemini y ChatGPT) mientras giran a su alrededor documentos de plantilla y engranajes de script. Representa la portabilidad y la estructura en capas de una skill.</p>
+  <p class="credit-name">Rubén Sbarsky</p>
+  <p style="font-size:1.1em;font-weight:600;color:var(--accent)">Autor del tutorial</p>
+
+  <div class="card">
+    <h3>Información del archivo</h3>
+    <ul>
+      <li><strong>Fecha y hora de creación:</strong> 29/10/2026 — 18:14:33</li>
+      <li><strong>Versión:</strong> V001</li>
+      <li><strong>Archivo:</strong> tutorial_skills_gemini_chatgpt_V001.html</li>
+      <li><strong>Metodología:</strong> PLANIFICAR → CONSTRUIR → AUDITAR → CORREGIR → VERIFICAR → ENTREGAR</li>
+      <li><strong>Sin dependencias externas:</strong> HTML, CSS, JS y SVG integrados en un único archivo autónomo.</li>
+    </ul>
+  </div>
+
+  <div class="callout success">
+    <strong>Nota de verificación:</strong> este tutorial ha sido auditado de forma estática. Las comprobaciones interactivas (apertura en navegador real, impresión y PDF) deben realizarse abriendo el archivo directamente en el navegador. Si tu visor bloquea la impresión, abre el HTML con Chrome, Edge o Firefox y usa <code>Ctrl+P</code> o <code>Cmd+P</code>.
+  </div>
+</section>
+
+</main>
+
+<div id="toolbar">
+  <button class="tool-btn" id="btnTheme" aria-label="Cambiar tema" title="Cambiar tema">🌓</button>
+  <button class="tool-btn" id="btnFsUp" aria-label="Aumentar tamaño de letra" title="Aumentar letra">A+</button>
+  <button class="tool-btn" id="btnFsDown" aria-label="Reducir tamaño de letra" title="Reducir letra">A−</button>
+  <button class="tool-btn" id="btnPrint" aria-label="Imprimir o guardar como PDF" title="Imprimir / PDF">🖨</button>
+  <button class="tool-btn" id="btnTop" aria-label="Volver arriba" title="Volver arriba">↑</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   Utilidades
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
+
+const storage = {
+  get(k, fb){
+    try{ const v = localStorage.getItem(k); return v !== null ? v : fb; }
+    catch(e){ return fb; }
+  },
+  set(k, v){
+    try{ localStorage.setItem(k, v); }catch(e){ /* silencioso */ }
+  }
+};
+
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============================================================
+   Plantilla SVG única
+   ============================================================ */
+function getHeroSVG(S){
+  return '' +
+  '<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ht-' + S + ' hd-' + S + '">' +
+    '<title id="ht-' + S + '">Skill central SKILL.md conectada a Gemini y ChatGPT con plantillas y scripts orbitando</title>' +
+    '<desc id="d-' + S + '">Ilustración animada: una carpeta de skill emite partículas de datos hacia dos nodos de IA, mientras documentos de plantilla y engranajes de script giran alrededor.</desc>' +
+    '<defs>' +
+      '<linearGradient id="bg-' + S + '" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="#050810"/>' +
+        '<stop offset="100%" stop-color="#0d1b33"/>' +
+      '</linearGradient>' +
+      '<radialGradient id="coreGlow-' + S + '" cx="50%" cy="50%" r="50%">' +
+        '<stop offset="0%" stop-color="#38bdf8" stop-opacity="0.55"/>' +
+        '<stop offset="55%" stop-color="#38bdf8" stop-opacity="0.15"/>' +
+        '<stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>' +
+      '</radialGradient>' +
+      '<linearGradient id="cardGrad-' + S + '" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#1a3a63"/>' +
+        '<stop offset="100%" stop-color="#0a1e3a"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="gemini-' + S + '" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#a78bfa"/>' +
+        '<stop offset="100%" stop-color="#ec4899"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="gpt-' + S + '" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#10b981"/>' +
+        '<stop offset="100%" stop-color="#22d3ee"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="accentGrad-' + S + '" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#38bdf8"/>' +
+        '<stop offset="100%" stop-color="#00d4ff"/>' +
+      '</linearGradient>' +
+      '<pattern id="grid-' + S + '" width="24" height="24" patternUnits="userSpaceOnUse">' +
+        '<path d="M 24 0 L 0 0 0 24" fill="none" stroke="#1e3a5f" stroke-width="0.35" opacity="0.5"/>' +
+      '</pattern>' +
+      '<filter id="glow-' + S + '" x="-50%" y="-50%" width="200%" height="200%">' +
+        '<feGaussianBlur stdDeviation="2.5" result="b"/>' +
+        '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+    '</defs>' +
+    '<rect width="400" height="500" fill="url(#bg-' + S + ')"/>' +
+    '<rect width="400" height="500" fill="url(#grid-' + S + ')"/>' +
+
+    /* Partículas de fondo */
+    '<g opacity="0.7">' +
+      '<circle cx="30" cy="80" r="1.2" fill="#38bdf8"><animate attributeName="cy" values="80;40;80" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.2;0.9;0.2" dur="5s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="360" cy="150" r="1.5" fill="#a78bfa"><animate attributeName="cy" values="150;110;150" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.9;0.3" dur="6s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="80" cy="380" r="1" fill="#10b981"><animate attributeName="cy" values="380;340;380" dur="4.5s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="330" cy="420" r="1.3" fill="#38bdf8"><animate attributeName="cy" values="420;380;420" dur="5.5s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="200" cy="470" r="1" fill="#00d4ff"><animate attributeName="cy" values="470;440;470" dur="4s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="120" cy="60" r="0.8" fill="#ec4899"><animate attributeName="cy" values="60;30;60" dur="7s" repeatCount="indefinite"/></circle>' +
+      '<circle cx="280" cy="60" r="0.9" fill="#22d3ee"><animate attributeName="cy" values="60;20;60" dur="6.5s" repeatCount="indefinite"/></circle>' +
+    '</g>' +
+
+    /* Halo central */
+    '<circle cx="200" cy="250" r="160" fill="url(#coreGlow-' + S + ')"/>' +
+
+    /* Rutas de conexión */
+    '<path id="pathL-' + S + '" d="M 200 250 Q 130 230 90 130" stroke="#a78bfa" stroke-width="1.3" fill="none" stroke-dasharray="3 4" opacity="0.55"><animate attributeName="stroke-dashoffset" from="0" to="-14" dur="2s" repeatCount="indefinite"/></path>' +
+    '<path id="pathR-' + S + '" d="M 200 250 Q 270 230 310 130" stroke="#10b981" stroke-width="1.3" fill="none" stroke-dasharray="3 4" opacity="0.55"><animate attributeName="stroke-dashoffset" from="0" to="-14" dur="2s" repeatCount="indefinite"/></path>' +
+
+    /* Partículas viajando */
+    '<g>' +
+      '<circle r="3" fill="#a78bfa" filter="url(#glow-' + S + ')"><animateMotion dur="3.5s" repeatCount="indefinite" rotate="auto"><mpath href="#pathL-' + S + '"/></animateMotion></circle>' +
+      '<circle r="2.5" fill="#38bdf8" filter="url(#glow-' + S + ')"><animateMotion dur="3.5s" repeatCount="indefinite" begin="1.2s" rotate="auto"><mpath href="#pathL-' + S + '"/></animateMotion></circle>' +
+      '<circle r="3" fill="#10b981" filter="url(#glow-' + S + ')"><animateMotion dur="4s" repeatCount="indefinite" rotate="auto"><mpath href="#pathR-' + S + '"/></animateMotion></circle>' +
+      '<circle r="2.5" fill="#38bdf8" filter="url(#glow-' + S + ')"><animateMotion dur="4s" repeatCount="indefinite" begin="1.5s" rotate="auto"><mpath href="#pathR-' + S + '"/></animateMotion></circle>' +
+    '</g>' +
+
+    /* Pulso central */
+    '<circle cx="200" cy="250" r="70" fill="url(#coreGlow-' + S + ')" opacity="0.6">' +
+      '<animate attributeName="r" values="70;95;70" dur="3s" repeatCount="indefinite"/>' +
+      '<animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>' +
+    '</circle>' +
+
+    /* Satélites orbitando */
+    '<g>' +
+      '<animateTransform attributeName="transform" type="rotate" from="0 200 250" to="360 200 250" dur="24s" repeatCount="indefinite"/>' +
+      /* Documento plantilla arriba */
+      '<g transform="translate(200 135)">' +
+        '<rect x="-22" y="-26" width="44" height="52" rx="4" fill="#12233f" stroke="#a78bfa" stroke-width="1.2"/>' +
+        '<line x1="-14" y1="-14" x2="14" y2="-14" stroke="#a78bfa" stroke-width="1.4"/>' +
+        '<line x1="-14" y1="-6" x2="14" y2="-6" stroke="#a78bfa" stroke-width="1" opacity="0.7"/>' +
+        '<line x1="-14" y1="2" x2="10" y2="2" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>' +
+        '<line x1="-14" y1="10" x2="12" y2="10" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>' +
+        '<line x1="-14" y1="18" x2="6" y2="18" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>' +
+      '</g>' +
+      /* Engranaje script abajo */
+      '<g transform="translate(200 365)">' +
+        '<g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite"/>' +
+          '<circle r="18" fill="#0f2a1f" stroke="#10b981" stroke-width="1.2"/>' +
+          '<rect x="-3" y="-23" width="6" height="8" rx="1" fill="#10b981"/>' +
+          '<rect x="-3" y="15" width="6" height="8" rx="1" fill="#10b981"/>' +
+          '<rect x="-23" y="-3" width="8" height="6" rx="1" fill="#10b981"/>' +
+          '<rect x="15" y="-3" width="8" height="6" rx="1" fill="#10b981"/>' +
+        '</g>' +
+        '<circle r="9" fill="none" stroke="#10b981" stroke-width="1.2"/>' +
+        '<circle r="3" fill="#10b981" opacity="0.8"/>' +
+      '</g>' +
+    '</g>' +
+
+    /* Satélite contra-rotación */
+    '<g>' +
+      '<animateTransform attributeName="transform" type="rotate" from="360 200 250" to="0 200 250" dur="18s" repeatCount="indefinite"/>' +
+      '<g transform="translate(120 250)">' +
+        '<circle r="10" fill="#0f2440" stroke="#38bdf8" stroke-width="1.2"/>' +
+        '<circle r="4" fill="#38bdf8"/>' +
+      '</g>' +
+    '</g>' +
+
+    /* Tarjeta central de skill */
+    '<g transform="translate(200 250)">' +
+      '<path d="M -60 -80 L -60 -92 L -30 -92 L -20 -80 Z" fill="url(#cardGrad-' + S + ')" stroke="#38bdf8" stroke-width="1.5"/>' +
+      '<rect x="-60" y="-80" width="120" height="155" rx="8" fill="url(#cardGrad-' + S + ')" stroke="#38bdf8" stroke-width="1.8"/>' +
+      '<rect x="-48" y="-70" width="96" height="3" rx="1.5" fill="url(#accentGrad-' + S + ')"/>' +
+      '<rect x="-48" y="-58" width="40" height="2.5" rx="1.25" fill="#a78bfa" opacity="0.9"/>' +
+      '<rect x="-48" y="-52" width="70" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.6"/>' +
+      '<rect x="-48" y="-46" width="60" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.5"/>' +
+      '<line x1="-48" y1="-38" x2="48" y2="-38" stroke="#38bdf8" stroke-width="0.8" opacity="0.5"/>' +
+      '<rect x="-48" y="-28" width="80" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.7"/>' +
+      '<rect x="-48" y="-22" width="60" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.6"/>' +
+      '<rect x="-48" y="-16" width="70" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.5"/>' +
+      '<rect x="-48" y="-10" width="50" height="2.5" rx="1.25" fill="#94a3b8" opacity="0.5"/>' +
+      '<rect x="-48" y="10" width="96" height="22" rx="4" fill="#0a1e3a" stroke="#00d4ff" stroke-width="1"/>' +
+      '<text x="0" y="25" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" font-weight="bold" fill="#00d4ff">SKILL.md</text>' +
+      '<text x="0" y="50" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#94a3b8">activación automática</text>' +
+      '<text x="0" y="62" text-anchor="middle" font-family="sans-serif" font-size="6" fill="#64748b">description · pasos · estilo</text>' +
+    '</g>' +
+
+    /* Nodo Gemini */
+    '<g transform="translate(85 130)">' +
+      '<circle r="26" fill="#1a0f30" stroke="#a78bfa" stroke-width="1.5" opacity="0.95"/>' +
+      '<circle r="26" fill="none" stroke="#a78bfa" stroke-width="0.7" opacity="0.5">' +
+        '<animate attributeName="r" values="26;36;26" dur="3s" repeatCount="indefinite"/>' +
+        '<animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>' +
+      '</circle>' +
+      '<g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>' +
+        '<circle r="14" fill="url(#gemini-' + S + ')" opacity="0.9"/>' +
+      '</g>' +
+      '<circle r="6" fill="#fff" opacity="0.9"/>' +
+      '<text y="42" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#a78bfa">Gemini</text>' +
+    '</g>' +
+
+    /* Nodo ChatGPT */
+    '<g transform="translate(315 130)">' +
+      '<circle r="26" fill="#0a2018" stroke="#10b981" stroke-width="1.5" opacity="0.95"/>' +
+      '<circle r="26" fill="none" stroke="#10b981" stroke-width="0.7" opacity="0.5">' +
+        '<animate attributeName="r" values="26;36;26" dur="3.2s" repeatCount="indefinite"/>' +
+        '<animate attributeName="opacity" values="0.5;0;0.5" dur="3.2s" repeatCount="indefinite"/>' +
+      '</circle>' +
+      '<g><animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="11s" repeatCount="indefinite"/>' +
+        '<circle r="14" fill="url(#gpt-' + S + ')" opacity="0.9"/>' +
+      '</g>' +
+      '<circle r="6" fill="#fff" opacity="0.9"/>' +
+      '<text y="42" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#10b981">ChatGPT</text>' +
+    '</g>' +
+
+    '<text x="200" y="480" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="700" fill="#38bdf8" letter-spacing="2">SKILLS PORTABLES</text>' +
+  '</svg>';
+}
+
+function mountSVG(el, suffix){
+  if(el.querySelector('svg')) return;
+  el.innerHTML = getHeroSVG(suffix);
+  const svg = el.querySelector('svg');
+  if(!svg) return;
+  if(prefersReduced && typeof svg.pauseAnimations === 'function'){
+    requestAnimationFrame(function(){
+      try{ svg.pauseAnimations(); svg.setCurrentTime(1.5); }catch(e){}
+    });
+  }
+}
+
+/* ============================================================
+   Secciones, navegación e índice
+   ============================================================ */
+const secs = $$('section[data-tab]');
+const nav = $('#nav');
+const dr = $('#dr');
+const mb = $('#mb');
+
+/* Generar chips de pestaña */
+secs.forEach(function(s, i){
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.dataset.idx = i;
+  b.setAttribute('role','tab');
+  b.setAttribute('aria-selected','false');
+  b.textContent = s.dataset.t || ('Sección ' + (i+1));
+  b.onclick = function(){ go(i); };
+  nav.appendChild(b);
+});
+
+/* Generar entradas del índice */
+secs.forEach(function(s, i){
+  const a = document.createElement('a');
+  a.href = '#';
+  a.textContent = (i ? i + '. ' : '') + (s.dataset.t || (s.querySelector('h2') ? s.querySelector('h2').textContent : ('Sección ' + (i+1))));
+  a.onclick = function(e){
+    e.preventDefault();
+    go(i);
+    tg(false);
+  };
+  dr.appendChild(a);
+});
+
+function go(i){
+  if(i < 0 || i >= secs.length) return;
+  secs.forEach(function(s, j){
+    s.classList.toggle('on', j === i);
+  });
+  $$('nav .chip[data-idx]').forEach(function(b){
+    const on = parseInt(b.dataset.idx, 10) === i;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  Array.prototype.forEach.call(dr.children, function(a, j){
+    a.classList.toggle('on', j === i);
+  });
+  storage.set('tab', String(i));
+  try{ history.replaceState(null, '', '#' + secs[i].dataset.tab); }catch(e){}
+  /* Montar SVG si hay */
+  secs[i].querySelectorAll('.hero[data-svg-mount]').forEach(function(el){
+    if(!el.querySelector('svg')) mountSVG(el, el.dataset.svgMount);
+  });
+  /* Limpiar búsqueda */
+  clearSearchMarks();
+  const si = $('#search'); const sc = $('#searchCount');
+  if(si) si.value = '';
+  if(sc) sc.textContent = '';
+  /* Volver arriba */
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  /* Desplazar chip activo a la vista */
+  const activeChip = nav.querySelector('.chip.on');
+  if(activeChip && activeChip.scrollIntoView){
+    try{ activeChip.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); }catch(e){}
+  }
+}
+
+/* ============================================================
+   Drawer
+   ============================================================ */
+function tg(v){
+  const open = (typeof v === 'boolean') ? v : !dr.classList.contains('o');
+  dr.classList.toggle('o', open);
+  mb.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+mb.addEventListener('click', function(){ tg(); });
+window.addEventListener('keydown', function(e){ if(e.key === 'Escape') tg(false); });
+document.addEventListener('click', function(e){
+  if(!e.target.closest('#dr, #mb')) tg(false);
+});
+var ixBtn = document.getElementById('ix');
+if(ixBtn){ ixBtn.addEventListener('click', function(){ tg(true); }); }
+
+/* ============================================================
+   Preferencias: tema y tamaño de letra
+   ============================================================ */
+function applyTheme(light){
+  document.body.classList.toggle('light', !!light);
+  storage.set('theme', light ? 'light' : 'dark');
+}
+if(storage.get('theme','dark') === 'light') document.body.classList.add('light');
+$('#btnTheme').addEventListener('click', function(){
+  applyTheme(!document.body.classList.contains('light'));
+});
+
+const FS = ['fs-sm', '', 'fs-lg', 'fs-xl'];
+function applyFs(idx){
+  idx = Math.max(0, Math.min(FS.length - 1, idx));
+  FS.forEach(function(c){ if(c) document.body.classList.remove(c); });
+  if(FS[idx]) document.body.classList.add(FS[idx]);
+  storage.set('fs', String(idx));
+  return idx;
+}
+var fsIdx = parseInt(storage.get('fs','1'), 10);
+if(isNaN(fsIdx)) fsIdx = 1;
+applyFs(fsIdx);
+$('#btnFsUp').addEventListener('click', function(){
+  fsIdx = applyFs(fsIdx + 1);
+});
+$('#btnFsDown').addEventListener('click', function(){
+  fsIdx = applyFs(fsIdx - 1);
+});
+
+/* ============================================================
+   Volver arriba
+   ============================================================ */
+$('#btnTop').addEventListener('click', function(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ============================================================
+   Barra de progreso de lectura
+   ============================================================ */
+var progress = $('#progress');
+function updateProgress(){
+  var h = document.documentElement;
+  var max = (h.scrollHeight - h.clientHeight) || 1;
+  var pct = Math.min(100, Math.max(0, (h.scrollTop / max) * 100));
+  progress.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+window.addEventListener('resize', updateProgress);
+
+/* ============================================================
+   Copiar en bloques de código
+   ============================================================ */
+function initCopyButtons(){
+  $$('pre').forEach(function(pre){
+    if(pre.querySelector('.copy-btn')) return;
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copiar';
+    btn.setAttribute('aria-label','Copiar contenido del bloque');
+    btn.addEventListener('click', function(){
+      var code = pre.querySelector('code');
+      var text = code ? code.textContent : pre.textContent;
+      /* quitar el propio texto del botón si quedó en textContent */
+      if(!code){
+        text = text.replace(/Copiar$/,'').replace(/✓ Copiado$/,'').trim();
+      }
+      copyText(text, btn);
+    });
+    pre.appendChild(btn);
+  });
+}
+
+function copyText(text, btn){
+  function ok(){
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('ok');
+    setTimeout(function(){
+      btn.textContent = 'Copiar';
+      btn.classList.remove('ok');
+    }, 1800);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok).catch(function(){ fallbackCopy(text, ok); });
+  } else {
+    fallbackCopy(text, ok);
+  }
+}
+
+function fallbackCopy(text, done){
+  try{
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    var success = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(success){ done(); }
+    else{ alert('No se pudo copiar automáticamente. Selecciona el texto manualmente.'); }
+  }catch(e){
+    alert('No se pudo copiar automáticamente. Selecciona el texto manualmente.');
+  }
+}
+
+/* ============================================================
+   Checklists con persistencia
+   ============================================================ */
+function initChecklists(){
+  $$('input[type=checkbox][data-ck]').forEach(function(cb){
+    var key = 'ck_' + cb.dataset.ck;
+    cb.checked = storage.get(key, '0') === '1';
+    cb.addEventListener('change', function(){
+      storage.set(key, cb.checked ? '1' : '0');
+    });
+  });
+}
+
+/* ============================================================
+   Buscador
+   ============================================================ */
+var searchHits = [];
+var currentHit = -1;
+var searchTimer = null;
+
+function clearSearchMarks(){
+  $$('mark.search-hit, mark.search-current').forEach(function(m){
+    var p = m.parentNode;
+    if(!p) return;
+    p.replaceChild(document.createTextNode(m.textContent), m);
+    p.normalize();
+  });
+  searchHits = [];
+  currentHit = -1;
+}
+
+function doSearch(term){
+  clearSearchMarks();
+  var count = $('#searchCount');
+  if(!term || term.length < 2){ if(count) count.textContent = ''; return; }
+  var active = document.querySelector('section[data-tab].on');
+  if(!active) return;
+  var walker = document.createTreeWalker(active, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(n){
+      if(!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var p = n.parentNode;
+      if(!p) return NodeFilter.FILTER_REJECT;
+      var tag = p.tagName;
+      if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'MARK') return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var re = new RegExp(esc, 'gi');
+  var nodes = [];
+  var node;
+  while((node = walker.nextNode())){
+    if(re.test(node.nodeValue)) nodes.push(node);
+    re.lastIndex = 0;
+  }
+  nodes.forEach(function(n){
+    var text = n.nodeValue;
+    var frag = document.createDocumentFragment();
+    var last = 0; var m;
+    re.lastIndex = 0;
+    while((m = re.exec(text))){
+      if(m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var mk = document.createElement('mark');
+      mk.className = 'search-hit';
+      mk.textContent = m[0];
+      frag.appendChild(mk);
+      searchHits.push(mk);
+      last = m.index + m[0].length;
+      if(m[0].length === 0) re.lastIndex++;
+    }
+    if(last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    if(n.parentNode) n.parentNode.replaceChild(frag, n);
+  });
+  if(count) count.textContent = searchHits.length + (searchHits.length === 1 ? ' resultado' : ' resultados');
+  if(searchHits.length){ currentHit = 0; focusHit(); }
+}
+
+function focusHit(){
+  searchHits.forEach(function(h){ h.classList.remove('search-current'); });
+  if(currentHit >= 0 && currentHit < searchHits.length){
+    var el = searchHits[currentHit];
+    el.classList.add('search-current');
+    try{ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }catch(e){}
+  }
+}
+
+function initSearch(){
+  var input = $('#search');
+  if(!input) return;
+  input.addEventListener('input', function(){
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function(){ doSearch(input.value.trim()); }, 300);
+  });
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(searchHits.length){
+        currentHit = (currentHit + (e.shiftKey ? -1 : 1) + searchHits.length) % searchHits.length;
+        focusHit();
+      }
+    }
+    if(e.key === 'Escape'){
+      input.value = '';
+      clearSearchMarks();
+      var c = $('#searchCount'); if(c) c.textContent = '';
+      input.blur();
+    }
+  });
+}
+
+/* ============================================================
+   Impresión / PDF
+   ============================================================ */
+var printState = null;
+
+function mountAllSVGs(){
+  $$('.hero[data-svg-mount]').forEach(function(el){
+    if(!el.querySelector('svg')) mountSVG(el, el.dataset.svgMount);
+  });
+}
+
+$('#btnPrint').addEventListener('click', function(){
+  try{
+    printState = { items: [] };
+    mountAllSVGs();
+    $$('.hero svg').forEach(function(svg){
+      try{
+        var wasPaused = (typeof svg.animationsPaused === 'function') ? svg.animationsPaused() : false;
+        if(typeof svg.pauseAnimations === 'function') svg.pauseAnimations();
+        if(typeof svg.setCurrentTime === 'function') svg.setCurrentTime(1.5);
+        printState.items.push({ svg: svg, wasPaused: wasPaused });
+      }catch(e){}
+    });
+    window.print();
+  }catch(e){
+    alert('No se pudo abrir el diálogo de impresión. Abre este archivo directamente en el navegador y utiliza Ctrl+P o Cmd+P.');
+  }
+});
+
+function restorePrintState(){
+  if(!printState) return;
+  printState.items.forEach(function(it){
+    try{
+      if(!it.wasPaused && typeof it.svg.unpauseAnimations === 'function') it.svg.unpauseAnimations();
+    }catch(e){}
+  });
+  printState = null;
+}
+window.addEventListener('afterprint', restorePrintState);
+/* Fallback por si afterprint no se dispara en algún navegador */
+window.addEventListener('focus', function(){
+  setTimeout(restorePrintState, 500);
+});
+
+/* ============================================================
+   Inicialización
+   ============================================================ */
+function init(){
+  /* Pestaña inicial: hash > storage > primera */
+  var hash = (location.hash || '').replace('#','');
+  var hashIdx = -1;
+  for(var i = 0; i < secs.length; i++){
+    if(secs[i].dataset.tab === hash){ hashIdx = i; break; }
+  }
+  var storedIdx = parseInt(storage.get('tab','0'), 10);
+  if(isNaN(storedIdx) || storedIdx < 0 || storedIdx >= secs.length) storedIdx = 0;
+  var initIdx = (hashIdx >= 0) ? hashIdx : storedIdx;
+
+  go(initIdx);
+  initChecklists();
+  initCopyButtons();
+  initSearch();
+  updateProgress();
+
+  /* Reparación periódica de SVGs vacíos visibles */
+  setInterval(function(){
+    $$('.hero[data-svg-mount]').forEach(function(el){
+      if(el.offsetParent !== null && !el.querySelector('svg')){
+        mountSVG(el, el.dataset.svgMount);
+      }
+    });
+  }, 2000);
+
+  /* Accesibilidad: foco visible en el botón de índice */
+  mb.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      tg();
+    }
+  });
+}
+
+init();
+})();
+</script>
+</body>
+</html>
