@@ -1,0 +1,1 @@
+# skills-para-gemini-y-chatgpt
